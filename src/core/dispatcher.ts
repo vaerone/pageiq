@@ -12,19 +12,17 @@ export class Dispatcher {
   private listeners: ListenerMap = {};
 
   on<E extends LifecycleEvent>(event: E, cb: LifecycleCallback<E>) {
-    const set =
-      (this.listeners[event] as Set<LifecycleCallback<E>> | undefined) ??
-      new Set<LifecycleCallback<E>>();
+    const set: Set<LifecycleCallback<E>> = this.listeners[event] ?? new Set();
+    this.listeners[event] = set as ListenerMap[E];
 
     set.add(cb);
-    this.listeners[event] = set as any;
-
     return () => this.off(event, cb);
   }
 
   off<E extends LifecycleEvent>(event: E, cb: LifecycleCallback<E>) {
-    const set = this.listeners[event] as Set<LifecycleCallback<E>> | undefined;
+    let set: Set<LifecycleCallback<E>> | undefined = this.listeners[event];
     if (!set) return;
+
     set.delete(cb);
     if (set.size === 0) delete this.listeners[event];
   }
@@ -33,8 +31,9 @@ export class Dispatcher {
     event: E,
     payload: LifecycleEventPayloadMap[E],
   ) {
-    const set = this.listeners[event] as Set<LifecycleCallback<E>> | undefined;
+    let set: Set<LifecycleCallback<E>> | undefined = this.listeners[event];
     if (!set) return;
+
     for (const cb of set) cb(payload);
   }
 }
