@@ -7,8 +7,8 @@ export function attachFocus(dispatcher: Dispatcher, abortSignal: AbortSignal) {
   const onFocus = () => dispatcher.emit("FOCUSED", undefined);
   const onBlur = () => dispatcher.emit("BLURRED", undefined);
 
-  window.addEventListener("focus", onFocus, { passive: true });
-  window.addEventListener("blur", onBlur, { passive: true });
+  window.addEventListener("focus", onFocus);
+  window.addEventListener("blur", onBlur);
 
   abortSignal.addEventListener(
     "abort",
